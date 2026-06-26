@@ -1,0 +1,14 @@
+{
+  "name": "cortis-fanbase",
+  "version": "1.0.0",
+  "description": "CORTIS Fanbase Website",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "bcryptjs": "^2.4.3",
+    "cookie": "^0.6.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

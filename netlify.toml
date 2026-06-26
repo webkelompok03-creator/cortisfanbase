@@ -1,0 +1,18 @@
+[build]
+  functions = "netlify/functions"
+  publish = "."
+
+[functions]
+  node_bundler = "esbuild"
+
+# Redirect semua request API ke function
+[[redirects]]
+  from = "/.netlify/functions/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# Redirect 404 ke index
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

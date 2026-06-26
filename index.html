@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORTIS Fanbase</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #f5f5f5; 
+            padding-bottom: 80px;
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: -1;
+        }
+        
+        /* Music Player Bar */
+        .music-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white; padding: 0.8rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000; flex-wrap: wrap; gap: 0.5rem;
+        }
+        .music-info { display: flex; align-items: center; gap: 1rem; flex: 2; }
+        .music-info i { font-size: 1.2rem; color: #ff6b6b; animation: pulse 1s infinite; }
+        .music-title { font-weight: bold; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .music-controls { display: flex; align-items: center; gap: 1rem; flex: 3; justify-content: center; }
+        .music-controls button { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; padding: 0.3rem 0.6rem; border-radius: 50%; }
+        .music-controls button:hover { background: #ff6b6b; }
+        .volume-control { display: flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: flex-end; }
+        @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+        
+        nav { background: rgba(26, 26, 46, 0.95); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; backdrop-filter: blur(5px); }
+        .logo { font-size: 1.5rem; font-weight: bold; }
+        .logo span { color: #ff6b6b; }
+        .nav-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        .nav-links a { color: white; text-decoration: none; }
+        .nav-links a:hover { color: #ff6b6b; }
+        .user-menu { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .btn-small { background: #ff6b6b; color: white; border: none; padding: 0.3rem 0.8rem; border-radius: 1rem; cursor: pointer; }
+        .login-link { color: #ff6b6b; text-decoration: none; }
+        .btn { background: #ff6b6b; color: white; padding: 0.5rem 1.5rem; border: none; border-radius: 2rem; cursor: pointer; text-decoration: none; display: inline-block; margin: 0.5rem; }
+        .role-badge { font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 1rem; margin-left: 0.5rem; }
+        .role-super { background: #ffd700; color: #1a1a2e; }
+        .role-admin { background: #ff6b6b; color: white; }
+        .role-user { background: #4CAF50; color: white; }
+        
+        section { padding: 2rem; max-width: 1400px; margin: auto; }
+        .section-title { font-size: 2rem; margin-bottom: 1.5rem; border-bottom: 3px solid #ff6b6b; display: inline-block; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        
+        .hero { background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); color: white; text-align: center; padding: 3rem; border-radius: 1rem; margin-top: 1rem; }
+        
+        .search-container { background: white; border-radius: 2rem; padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .search-container i { color: #ff6b6b; font-size: 1.2rem; }
+        .search-container input { flex: 1; border: none; padding: 0.5rem; font-size: 1rem; outline: none; }
+        .search-container button { background: #ff6b6b; border: none; padding: 0.5rem 1rem; border-radius: 2rem; color: white; cursor: pointer; }
+        .search-container button:hover { background: #e55a6b; }
+        .search-reset { background: #ddd !important; color: #333 !important; }
+        .search-info { font-size: 0.85rem; color: #666; margin-bottom: 1rem; padding: 0.5rem; background: #f0f0f5; border-radius: 0.5rem; }
+        
+        .members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+        .member-card { background: white; border-radius: 1rem; overflow: hidden; text-align: center; padding-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .member-img { width: 100%; height: 200px; object-fit: cover; }
+        
+        .gallery-full-page { background: rgba(0,0,0,0.6); border-radius: 1rem; padding: 1.5rem; backdrop-filter: blur(5px); }
+        .gallery-grid-full { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .gallery-item-full { background: white; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s; cursor: pointer; }
+        .gallery-item-full:hover { transform: translateY(-5px); }
+        .gallery-item-full img { width: 100%; height: 250px; object-fit: cover; }
+        .gallery-info { padding: 1rem; }
+        .gallery-info h4 { margin-bottom: 0.3rem; color: #333; }
+        .gallery-info p { color: #666; font-size: 0.85rem; }
+        .gallery-date { font-size: 0.7rem; color: #999; margin-top: 0.5rem; }
+        
+        .social-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+        .social-card { background: white; border-radius: 1rem; overflow: hidden; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .social-card iframe { width: 100%; border: none; border-radius: 0.5rem; }
+        .social-platform { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 0.5rem; font-size: 0.7rem; margin-bottom: 0.5rem; }
+        .platform-instagram { background: linear-gradient(45deg, #f09433, #d62976); color: white; }
+        .platform-youtube { background: #ff0000; color: white; }
+        
+        .news-card { background: white; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid #ff6b6b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        .news-card h3 { margin-bottom: 0.5rem; }
+        
+        .forum-container { background: white; border-radius: 1rem; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .forum-post { background: #f8f9fa; border-radius: 0.5rem; padding: 0.8rem; margin-bottom: 0.8rem; }
+        .forum-author { font-weight: bold; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+        .forum-message { margin-top: 0.5rem; word-wrap: break-word; }
+        .replies-container { margin-top: 0.8rem; }
+        .reply-btn { background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 0.8rem; }
+        .reply-btn:hover { text-decoration: underline; }
+        .add-post { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+        .add-post textarea { padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #ddd; font-family: inherit; resize: vertical; }
+        
+        .admin-section { background: #fff3cd; border: 3px solid #ff6b6b; border-radius: 1rem; margin-top: 2rem; padding: 1.5rem; }
+        .admin-section h2 { color: #ff6b6b; margin-bottom: 1rem; }
+        .admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .admin-tab-btn { background: #ddd; border: none; padding: 0.5rem 1rem; border-radius: 2rem; cursor: pointer; }
+        .admin-tab-btn.active { background: #ff6b6b; color: white; }
+        .admin-tab-content { display: none; background: white; padding: 1rem; border-radius: 0.5rem; }
+        .admin-tab-content.active { display: block; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; }
+        .stat-card { background: #f8f9fa; padding: 1rem; text-align: center; border-radius: 0.5rem; }
+        .stat-card span { font-size: 1.8rem; font-weight: bold; display: block; color: #ff6b6b; }
+        .admin-form input, .admin-form textarea, .admin-form select { width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; border: 1px solid #ddd; border-radius: 0.5rem; }
+        .admin-list-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid #eee; flex-wrap: wrap; gap: 0.5rem; }
+        .btn-icon { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 0.3rem; }
+        .btn-icon.edit { color: #ffc107; }
+        .btn-icon.delete { color: #dc3545; }
+        .btn-icon:hover { opacity: 0.7; background: #f0f0f0; }
+        
+        .user-badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; font-weight: bold; margin-left: 0.5rem; }
+        .user-badge.super_admin { background: #ffd700; color: #1a1a2e; }
+        .user-badge.admin { background: #ff6b6b; color: white; }
+        .user-badge.user { background: #4CAF50; color: white; }
+        .user-badge.banned { background: #dc3545; color: white; }
+        
+        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; justify-content: center; align-items: center; cursor: pointer; }
+        .lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 0.5rem; }
+        .lightbox .close-lightbox { position: absolute; top: 20px; right: 30px; color: white; font-size: 2rem; cursor: pointer; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 2rem; border-radius: 1rem; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .modal-content h3 { margin-bottom: 1rem; }
+        .modal-content input, .modal-content textarea, .modal-content select { width: 100%; padding: 0.5rem; margin-bottom: 0.8rem; border: 1px solid #ddd; border-radius: 0.5rem; }
+        .modal-buttons { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem; }
+        
+        footer { background: rgba(26, 26, 46, 0.95); color: white; text-align: center; padding: 1.5rem; margin-top: 2rem; backdrop-filter: blur(5px); }
+        
+        @media (max-width: 700px) { 
+            nav { flex-direction: column; text-align: center; } 
+            .music-bar { flex-direction: column; } 
+            .social-grid { grid-template-columns: 1fr; }
+            .gallery-grid-full { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- MUSIC PLAYER BAR -->
+<div id="musicBar" class="music-bar" style="display:none;">
+    <div class="music-info">
+        <i class="fas fa-music"></i>
+        <span class="music-title" id="currentSongTitle">Memuat playlist...</span>
+    </div>
+    <div class="music-controls">
+        <button id="prevBtn"><i class="fas fa-backward"></i></button>
+        <button id="playPauseBtn"><i class="fas fa-play"></i></button>
+        <button id="nextBtn"><i class="fas fa-forward"></i></button>
+        <span id="timeDisplay">0:00 / 0:00</span>
+    </div>
+    <div class="volume-control">
+        <i class="fas fa-volume-down"></i>
+        <input type="range" id="volumeSlider" min="0" max="100" value="70">
+        <i class="fas fa-volume-up"></i>
+    </div>
+</div>
+
+<nav>
+    <div class="logo">CORTIS<span>FANBASE</span></div>
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#profile">Profile</a>
+        <a href="#gallery">Galeri</a>
+        <a href="#social">Sosial Media</a>
+        <a href="#news">Berita</a>
+        <a href="#forum">Forum</a>
+    </div>
+    <div class="user-menu">
+        <span id="userNameDisplay"></span>
+        <button id="logoutBtn" class="btn-small" style="display:none;">Logout</button>
+        <a href="/login.html" id="loginLink" class="login-link">Login / Sign Up</a>
+    </div>
+</nav>
+
+<section id="home">
+    <div class="hero">
+        <h1><i class="fas fa-heart"></i> CORTIS Fanbase</h1>
+        <p>Rumah untuk penggemar CORTIS di seluruh Indonesia</p>
+        <a href="#forum" class="btn">Join Forum</a>
+        <a href="#gallery" class="btn">Lihat Galeri</a>
+    </div>
+</section>
+
+<section id="profile">
+    <h2 class="section-title"><i class="fas fa-user-friends"></i> Profil Member</h2>
+    <div class="members-grid" id="membersGrid">Loading...</div>
+</section>
+
+<!-- GALLERY SECTION WITH SEARCH -->
+<section id="gallery">
+    <h2 class="section-title"><i class="fas fa-images"></i> Galeri Foto</h2>
+    <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" id="gallerySearchInput" placeholder="Cari foto berdasarkan judul atau deskripsi..." onkeypress="if(event.key==='Enter') searchGallery()">
+        <button onclick="searchGallery()">Cari</button>
+        <button onclick="resetGallerySearch()" class="search-reset">Reset</button>
+    </div>
+    <div id="gallerySearchInfo" class="search-info" style="display:none;"></div>
+    <div class="gallery-full-page">
+        <div class="gallery-grid-full" id="galleryGrid">Loading...</div>
+    </div>
+</section>
+
+<section id="social">
+    <h2 class="section-title"><i class="fab fa-instagram"></i> <i class="fab fa-youtube"></i> Sosial Media</h2>
+    <div class="social-grid" id="socialGrid">Loading...</div>
+</section>
+
+<!-- NEWS SECTION WITH SEARCH -->
+<section id="news">
+    <h2 class="section-title"><i class="fas fa-newspaper"></i> Berita & Update</h2>
+    <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" id="newsSearchInput" placeholder="Cari berita berdasarkan judul atau isi..." onkeypress="if(event.key==='Enter') searchNews()">
+        <button onclick="searchNews()">Cari</button>
+        <button onclick="resetNewsSearch()" class="search-reset">Reset</button>
+    </div>
+    <div id="newsSearchInfo" class="search-info" style="display:none;"></div>
+    <div id="newsList">Loading...</div>
+</section>
+
+<!-- FORUM SECTION WITH SEARCH -->
+<section id="forum">
+    <h2 class="section-title"><i class="fas fa-comments"></i> Forum Diskusi</h2>
+    <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" id="forumSearchInput" placeholder="Cari diskusi berdasarkan pesan atau username..." onkeypress="if(event.key==='Enter') searchForum()">
+        <button onclick="searchForum()">Cari</button>
+        <button onclick="resetForumSearch()" class="search-reset">Reset</button>
+    </div>
+    <div id="forumSearchInfo" class="search-info" style="display:none;"></div>
+    <div class="forum-container">
+        <div id="forumPosts">Loading...</div>
+        <div class="add-post">
+            <div id="loginPrompt" style="display:none; text-align:center; padding:1rem; background:#f0f0f0; border-radius:0.5rem;">
+                🔐 Silakan <a href="/login.html">Login</a> untuk posting
+            </div>
+            <div id="postForm" style="display:none;">
+                <textarea id="forumMessage" rows="2" placeholder="Tulis komentar atau diskusi seputar CORTIS..."></textarea>
+                <button class="btn" id="postBtn">Kirim Komentar</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ADMIN PANEL -->
+<section id="adminPanel" class="admin-section" style="display:none;">
+    <h2><i class="fas fa-crown"></i> PANEL ADMIN</h2>
+    <div class="admin-tabs">
+        <button class="admin-tab-btn active" data-tab="dashboard">📊 Dashboard</button>
+        <button class="admin-tab-btn" data-tab="manageNews">📰 Berita</button>
+        <button class="admin-tab-btn" data-tab="manageGallery">🖼️ Galeri</button>
+        <button class="admin-tab-btn" data-tab="manageMembers">👥 Member</button>
+        <button class="admin-tab-btn" data-tab="manageSocial">📱 Sosial Media</button>
+        <button class="admin-tab-btn" data-tab="manageMusic">🎵 Musik</button>
+        <button class="admin-tab-btn" data-tab="manageBackground">🎨 Background</button>
+        <button class="admin-tab-btn" data-tab="manageUsers" id="userManagementTab" style="display:none;">👥 Kelola User</button>
+    </div>
+    
+    <div id="dashboardTab" class="admin-tab-content active">
+        <div class="stats-grid">
+            <div class="stat-card"><i class="fas fa-comments"></i><span id="statForum">0</span><p>Postingan</p></div>
+            <div class="stat-card"><i class="fas fa-newspaper"></i><span id="statNews">0</span><p>Berita</p></div>
+            <div class="stat-card"><i class="fas fa-images"></i><span id="statGallery">0</span><p>Galeri</p></div>
+            <div class="stat-card"><i class="fas fa-users"></i><span id="statMembers">0</span><p>Member</p></div>
+            <div class="stat-card"><i class="fab fa-instagram"></i><span id="statSocial">0</span><p>Sosial Media</p></div>
+            <div class="stat-card"><i class="fas fa-music"></i><span id="statMusic">0</span><p>Lagu</p></div>
+            <div class="stat-card"><i class="fas fa-user-friends"></i><span id="statUsers">0</span><p>User</p></div>
+        </div>
+    </div>
+    
+    <div id="manageNewsTab" class="admin-tab-content">
+        <div class="admin-form"><h3>Tambah Berita</h3><input type="text" id="newsTitle" placeholder="Judul"><textarea id="newsContent" rows="3" placeholder="Isi"></textarea><input type="date" id="newsDate"><button class="btn" id="addNewsBtn">Tambah</button></div>
+        <h3>Daftar Berita</h3><div id="newsListAdmin">Loading...</div>
+    </div>
+    
+    <div id="manageGalleryTab" class="admin-tab-content">
+        <div class="admin-form"><h3>Tambah Foto ke Galeri</h3><input type="text" id="galleryTitle" placeholder="Judul Foto"><input type="text" id="galleryImageUrl" placeholder="URL Gambar"><input type="text" id="galleryCaption" placeholder="Deskripsi"><button class="btn" id="uploadGalleryBtn">Tambah Foto</button><p style="font-size:0.8rem; margin-top:0.5rem;">💡 Masukkan URL gambar dari hosting lain (Imgur, Google Drive, dll)</p></div>
+        <h3>Daftar Galeri</h3><div id="galleryListAdmin">Loading...</div>
+    </div>
+    
+    <div id="manageMembersTab" class="admin-tab-content">
+        <div class="admin-form"><h3>Tambah Member</h3><input type="text" id="memberName" placeholder="Nama"><input type="text" id="memberRole" placeholder="Role"><textarea id="memberBio" rows="2" placeholder="Bio"></textarea><input type="text" id="memberPhoto" placeholder="URL Foto"><button class="btn" id="addMemberBtn">Tambah</button></div>
+        <h3>Daftar Member</h3><div id="membersListAdmin">Loading...</div>
+    </div>
+    
+    <div id="manageSocialTab" class="admin-tab-content">
+        <div class="admin-form"><h3>Tambah Sosial Media</h3><select id="socialPlatform"><option value="instagram">Instagram</option><option value="youtube">YouTube</option></select><input type="text" id="socialUrl" placeholder="URL"><textarea id="socialEmbed" rows="2" placeholder="Kode Embed (opsional)"></textarea><input type="text" id="socialCaption" placeholder="Caption"><button class="btn" id="addSocialBtn">Tambah</button></div>
+        <h3>Daftar Sosial Media</h3><div id="socialListAdmin">Loading...</div>
+    </div>
+    
+    <div id="manageMusicTab" class="admin-tab-content">
+        <div class="admin-form"><h3>Tambah Lagu</h3><input type="text" id="musicTitle" placeholder="Judul Lagu"><input type="text" id="musicUrl" placeholder="URL File MP3"><button class="btn" id="uploadMusicBtn">Tambah Lagu</button><p style="font-size:0.8rem; margin-top:0.5rem;">💡 Masukkan URL MP3 dari hosting lain</p></div>
+        <h3>Daftar Playlist</h3><div id="musicListAdmin">Loading...</div>
+    </div>
+    
+    <div id="manageBackgroundTab" class="admin-tab-content">
+        <div class="admin-form"><h3>Ganti Background Website</h3><input type="text" id="backgroundUrl" placeholder="URL Gambar Background"><button class="btn" id="uploadBackgroundBtn">Update Background</button><p style="font-size:0.8rem; margin-top:0.5rem;">💡 Masukkan URL gambar dari hosting lain</p></div>
+        <div id="backgroundPreview" style="margin-top:1rem; padding:1rem; background:#f0f0f0; border-radius:0.5rem; text-align:center;">
+            <p>Background saat ini:</p>
+            <img id="currentBackgroundPreview" src="" style="max-width:100%; max-height:200px; border-radius:0.5rem;">
+        </div>
+    </div>
+    
+    <div id="manageUsersTab" class="admin-tab-content">
+        <div class="stats-grid" style="margin-bottom:1rem;">
+            <div class="stat-card"><i class="fas fa-users"></i><span id="totalUsers">0</span><p>Total User</p></div>
+            <div class="stat-card"><i class="fas fa-user-shield"></i><span id="totalAdmins">0</span><p>Admin</p></div>
+            <div class="stat-card"><i class="fas fa-ban"></i><span id="totalBanned">0</span><p>Di-Ban</p></div>
+        </div>
+        <h3>Daftar Semua User</h3>
+        <div id="usersListAdmin">Loading...</div>
+    </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" class="lightbox">
+    <span class="close-lightbox">&times;</span>
+    <img id="lightboxImg" src="">
+</div>
+
+<!-- MODAL EDIT -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle">Edit Item</h3>
+        <div id="modalFields"></div>
+        <div class="modal-buttons">
+            <button class="btn" id="saveEditBtn">Simpan</button>
+            <button class="btn" id="cancelEditBtn" style="background:#ccc;">Batal</button>
+        </div>
+    </div>
+</div>
+
+<footer><p><i class="fas fa-heart"></i> CORTIS Fanbase | #CortisEverlasting <i class="fas fa-music"></i></p></footer>
+
+<script>
+    const API_BASE = window.location.origin + '/.netlify/functions/api';
+    let currentUser = null;
+    let currentEditType = null;
+    let currentEditId = null;
+    let usersData = [];
+    
+    let allGalleryData = [];
+    let allNewsData = [];
+    let allForumData = [];
+    
+    // ============= UTILS =============
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    }
+    function formatDate(dateStr) {
+        if (!dateStr) return 'baru saja';
+        return new Date(dateStr).toLocaleString('id-ID');
+    }
+    
+    // ============= MUSIC PLAYER =============
+    let playlist = [], currentSongIndex = 0, audioPlayer = null, isPlaying = false;
+    
+    async function loadPlaylist() {
+        try {
+            const res = await fetch(`${API_BASE}/music`);
+            playlist = await res.json();
+            if (playlist.length > 0 && audioPlayer) {
+                audioPlayer.src = playlist[0].filepath;
+                document.getElementById('currentSongTitle').innerText = playlist[0].title || 'Lagu CORTIS';
+                document.getElementById('musicBar').style.display = 'flex';
+            }
+        } catch(e) { console.error('Load playlist error:', e); }
+    }
+    
+    function initMusicPlayer() {
+        audioPlayer = new Audio();
+        audioPlayer.volume = 0.7;
+        audioPlayer.addEventListener('ended', () => nextSong());
+        audioPlayer.addEventListener('timeupdate', () => {
+            const current = formatTime(audioPlayer.currentTime);
+            const duration = formatTime(audioPlayer.duration);
+            document.getElementById('timeDisplay').innerText = `${current} / ${duration}`;
+        });
+        
+        document.getElementById('playPauseBtn').onclick = () => {
+            if (isPlaying) {
+                audioPlayer.pause();
+                document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
+                isPlaying = false;
+            } else {
+                audioPlayer.play().catch(e => console.log('Play error:', e));
+                document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-pause"></i>';
+                isPlaying = true;
+            }
+        };
+        
+        document.getElementById('nextBtn').onclick = () => nextSong();
+        document.getElementById('prevBtn').onclick = () => prevSong();
+        document.getElementById('volumeSlider').oninput = (e) => audioPlayer.volume = e.target.value / 100;
+        
+        loadPlaylist().then(() => {
+            if (playlist.length > 0) {
+                audioPlayer.src = playlist[0].filepath;
+                document.getElementById('currentSongTitle').innerText = playlist[0].title || 'Lagu CORTIS';
+            }
+        });
+        
+        // Auto-play saat user pertama kali klik (kebijakan browser)
+        document.body.addEventListener('click', () => {
+            if (playlist.length > 0 && !isPlaying && audioPlayer.src) {
+                audioPlayer.play().catch(() => {});
+                document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-pause"></i>';
+                isPlaying = true;
+            }
+        }, { once: true });
+    }
+    
+    function nextSong() {
+        if (playlist.length === 0) return;
+        currentSongIndex = (currentSongIndex + 1) % playlist.length;
+        audioPlayer.src = playlist[currentSongIndex].filepath;
+        document.getElementById('currentSongTitle').innerText = playlist[currentSongIndex].title || 'Lagu CORTIS';
+        audioPlayer.play();
+        isPlaying = true;
+        document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-pause"></i>';
+    }
+    
+    function prevSong() {
+        if (playlist.length === 0) return;
+        currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
+        audioPlayer.src = playlist[currentSongIndex].filepath;
+        document.getElementById('currentSongTitle').innerText = playlist[currentSongIndex].title || 'Lagu CORTIS';
+        audioPlayer.play();
+        isPlaying = true;
+        document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-pause"></i>';
+    }
+    
+    function formatTime(seconds) {
+        if (isNaN(seconds) || seconds === Infinity) return '0:00';
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    // ============= AUTH =============
+    async function checkAuth() {
+        try {
+            const res = await fetch(`${API_BASE}/me`, { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                currentUser = data.user;
+                
+                let roleBadge = '';
+                if (currentUser.role === 'super_admin') {
+                    roleBadge = '<span class="role-badge role-super">👑 SUPER ADMIN</span>';
+                } else if (currentUser.role === 'admin') {
+                    roleBadge = '<span class="role-badge role-admin">⭐ ADMIN</span>';
+                } else {
+                    roleBadge = '<span class="role-badge role-user">👤 USER</span>';
+                }
+                
+                document.getElementById('userNameDisplay').innerHTML = `${escapeHtml(currentUser.username)} ${roleBadge}`;
+                document.getElementById('loginLink').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'inline-block';
+                document.getElementById('loginPrompt').style.display = 'none';
+                document.getElementById('postForm').style.display = 'flex';
+                document.getElementById('postForm').style.flexDirection = 'column';
+                
+                if (currentUser.role === 'super_admin' || currentUser.role === 'admin') {
+                    document.getElementById('musicBar').style.display = 'none';
+                    if (audioPlayer) audioPlayer.pause();
+                    document.getElementById('adminPanel').style.display = 'block';
+                    if (currentUser.role === 'super_admin') {
+                        document.getElementById('userManagementTab').style.display = 'inline-block';
+                        loadUsersAdmin();
+                    }
+                    loadStats();
+                    loadNewsAdmin();
+                    loadGalleryAdmin();
+                    loadMembersAdmin();
+                    loadSocialAdmin();
+                    loadMusicAdmin();
+                } else {
+                    document.getElementById('musicBar').style.display = 'flex';
+                    if (!audioPlayer) initMusicPlayer();
+                    document.getElementById('adminPanel').style.display = 'none';
+                }
+            } else {
+                currentUser = null;
+                document.getElementById('userNameDisplay').innerHTML = '';
+                document.getElementById('loginLink').style.display = 'inline-block';
+                document.getElementById('logoutBtn').style.display = 'none';
+                document.getElementById('loginPrompt').style.display = 'block';
+                document.getElementById('postForm').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'none';
+                document.getElementById('musicBar').style.display = 'flex';
+                if (!audioPlayer) initMusicPlayer();
+            }
+        } catch(e) { console.error('Auth error:', e); }
+    }
+    
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
+        window.location.reload();
+    });
+    
+    // ============= LOAD DATA =============
+    async function loadMembers() {
+        try {
+            const res = await fetch(`${API_BASE}/members`);
+            const members = await res.json();
+            document.getElementById('membersGrid').innerHTML = members.length
+                ? members.map(m => `
+                    <div class="member-card">
+                        <img class="member-img" src="${escapeHtml(m.photo || '')}" onerror="this.src='https://placehold.co/400x500/cccccc/555?text=CORTIS'">
+                        <h3>${escapeHtml(m.name)}</h3>
+                        <p>${escapeHtml(m.role)}</p>
+                        <small>${escapeHtml(m.bio || '')}</small>
+                    </div>
+                `).join('')
+                : '<p style="color:white; text-align:center;">Belum ada data member.</p>';
+        } catch(e) { document.getElementById('membersGrid').innerHTML = '<p style="color:red;">Gagal memuat member.</p>'; }
+    }
+    
+    // ============= GALLERY =============
+    async function loadGallery() {
+        try {
+            const res = await fetch(`${API_BASE}/gallery`);
+            allGalleryData = await res.json();
+            displayGallery(allGalleryData);
+        } catch(e) { document.getElementById('galleryGrid').innerHTML = '<p style="color:red;">Gagal memuat galeri.</p>'; }
+    }
+    
+    function displayGallery(galleryData) {
+        document.getElementById('galleryGrid').innerHTML = galleryData.length
+            ? galleryData.map(item => `
+                <div class="gallery-item-full" onclick="openLightbox('${escapeHtml(item.filename)}')">
+                    <img src="${escapeHtml(item.filename)}" alt="${escapeHtml(item.title || 'Foto CORTIS')}" loading="lazy" onerror="this.src='https://placehold.co/600x400/cccccc/555?text=Gambar+Tidak+Tersedia'">
+                    <div class="gallery-info">
+                        <h4>${escapeHtml(item.title || 'Foto CORTIS')}</h4>
+                        <p>${escapeHtml(item.caption || '')}</p>
+                        <div class="gallery-date">📅 ${formatDate(item.uploaded_at)}</div>
+                    </div>
+                </div>
+            `).join('')
+            : '<p style="text-align:center; padding:2rem; color:white;">Belum ada foto di galeri.</p>';
+    }
+    
+    async function searchGallery() {
+        const query = document.getElementById('gallerySearchInput').value.trim();
+        const infoDiv = document.getElementById('gallerySearchInfo');
+        if (!query) { resetGallerySearch(); return; }
+        try {
+            const res = await fetch(`${API_BASE}/gallery/search?q=${encodeURIComponent(query)}`);
+            const results = await res.json();
+            displayGallery(results);
+            infoDiv.style.display = 'block';
+            infoDiv.innerHTML = `🔍 Menampilkan ${results.length} hasil untuk "<strong>${escapeHtml(query)}</strong>"`;
+        } catch(e) { console.error('Search gallery error:', e); }
+    }
+    
+    function resetGallerySearch() {
+        document.getElementById('gallerySearchInput').value = '';
+        document.getElementById('gallerySearchInfo').style.display = 'none';
+        displayGallery(allGalleryData);
+    }
+    
+    function openLightbox(src) {
+        document.getElementById('lightboxImg').src = src;
+        document.getElementById('lightbox').style.display = 'flex';
+    }
+    
+    document.getElementById('lightbox').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('lightbox') || e.target.classList.contains('close-lightbox')) {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+    });
+    
+    // ============= SOCIAL MEDIA =============
+    async function loadSocial() {
+        try {
+            const res = await fetch(`${API_BASE}/social`);
+            const items = await res.json();
+            document.getElementById('socialGrid').innerHTML = items.length
+                ? items.map(item => {
+                    let embedHtml = item.embed_code;
+                    if (!embedHtml && item.url) {
+                        if (item.platform === 'youtube') {
+                            const videoId = extractYouTubeId(item.url);
+                            if (videoId) embedHtml = `<iframe width="100%" height="250" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                        } else if (item.platform === 'instagram') {
+                            embedHtml = `<iframe src="${escapeHtml(item.url)}/embed" width="100%" height="450" frameborder="0"></iframe>`;
+                        }
+                    }
+                    return `
+                        <div class="social-card">
+                            <span class="social-platform platform-${escapeHtml(item.platform)}">${item.platform === 'instagram' ? '📷 Instagram' : '🎬 YouTube'}</span>
+                            ${embedHtml ? embedHtml : `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">🔗 Lihat Postingan</a>`}
+                            <div class="social-caption">${escapeHtml(item.caption || '')}</div>
+                        </div>
+                    `;
+                }).join('')
+                : '<p style="text-align:center;">Belum ada postingan sosial media.</p>';
+        } catch(e) { document.getElementById('socialGrid').innerHTML = '<p style="color:red;">Gagal memuat sosial media.</p>'; }
+    }
+    
+    function extractYouTubeId(url) {
+        const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+    
+    // ============= NEWS =============
+    async function loadNews() {
+        try {
+            const res = await fetch(`${API_BASE}/news`);
+            allNewsData = await res.json();
+            displayNews(allNewsData);
+        } catch(e) { document.getElementById('newsList').innerHTML = '<p style="color:red;">Gagal memuat berita.</p>'; }
+    }
+    
+    function displayNews(newsData) {
+        document.getElementById('newsList').innerHTML = newsData.length
+            ? newsData.map(n => `
+                <div class="news-card">
+                    <strong>${escapeHtml(n.date)}</strong>
+                    <h3>${escapeHtml(n.title)}</h3>
+                    <p>${escapeHtml(n.content)}</p>
+                </div>
+            `).join('')
+            : '<p style="text-align:center;">Belum ada berita.</p>';
+    }
+    
+    async function searchNews() {
+        const query = document.getElementById('newsSearchInput').value.trim();
+        const infoDiv = document.getElementById('newsSearchInfo');
+        if (!query) { resetNewsSearch(); return; }
+        try {
+            const res = await fetch(`${API_BASE}/news/search?q=${encodeURIComponent(query)}`);
+            const results = await res.json();
+            displayNews(results);
+            infoDiv.style.display = 'block';
+            infoDiv.innerHTML = `🔍 Menampilkan ${results.length} hasil untuk "<strong>${escapeHtml(query)}</strong>"`;
+        } catch(e) { console.error('Search news error:', e); }
+    }
+    
+    function resetNewsSearch() {
+        document.getElementById('newsSearchInput').value = '';
+        document.getElementById('newsSearchInfo').style.display = 'none';
+        displayNews(allNewsData);
+    }
+    
+    // ============= FORUM =============
+    async function loadForum() {
+        try {
+            const res = await fetch(`${API_BASE}/forum`);
+            allForumData = await res.json();
+            displayForum(allForumData);
+        } catch(e) { document.getElementById('forumPosts').innerHTML = '<p style="color:red;">Gagal memuat forum.</p>'; }
+    }
+    
+    function displayForum(posts) {
+        const mainPosts = posts.filter(p => !p.parent_id || p.parent_id === 0);
+        const replies = posts.filter(p => p.parent_id && p.parent_id > 0);
+        
+        const replyMap = {};
+        replies.forEach(reply => {
+            if (!replyMap[reply.parent_id]) replyMap[reply.parent_id] = [];
+            replyMap[reply.parent_id].push(reply);
+        });
+        for (const id in replyMap) {
+            replyMap[id].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        }
+        
+        function renderPost(post, isReply = false) {
+            const canDelete = currentUser && (currentUser.role === 'super_admin' || currentUser.role === 'admin');
+            const repliesHtml = replyMap[post.id] ? replyMap[post.id].map(r => renderPost(r, true)).join('') : '';
+            return `
+                <div class="forum-post" data-post-id="${post.id}" style="${isReply ? 'margin-left:2rem;border-left:3px solid #ff6b6b;margin-top:0.5rem;' : ''}">
+                    <div class="forum-author">
+                        <div>
+                            <strong>${escapeHtml(post.username)}</strong>
+                            <small style="color:#888;margin-left:0.5rem;">${formatDate(post.created_at)}</small>
+                            ${!isReply && currentUser ? `<button class="reply-btn" data-id="${post.id}"><i class="fas fa-reply"></i> Balas</button>` : ''}
+                        </div>
+                        ${canDelete ? `<button class="btn-icon delete" onclick="deletePost(${post.id})">🗑️</button>` : ''}
+                    </div>
+                    <div class="forum-message">${escapeHtml(post.message)}</div>
+                    <div class="replies-container">${repliesHtml}</div>
+                </div>
+            `;
+        }
+        
+        document.getElementById('forumPosts').innerHTML = mainPosts.length
+            ? mainPosts.map(post => renderPost(post)).join('')
+            : '<p style="text-align:center;padding:1rem;color:#888;">Belum ada postingan. Jadilah yang pertama!</p>';
+        
+        document.querySelectorAll('.reply-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showReplyForm(btn.dataset.id);
+            });
+        });
+    }
+    
+    async function searchForum() {
+        const query = document.getElementById('forumSearchInput').value.trim();
+        const infoDiv = document.getElementById('forumSearchInfo');
+        if (!query) { resetForumSearch(); return; }
+        try {
+            const res = await fetch(`${API_BASE}/forum/search?q=${encodeURIComponent(query)}`);
+            const results = await res.json();
+            displayForum(results);
+            infoDiv.style.display = 'block';
+            infoDiv.innerHTML = `🔍 Menampilkan ${results.length} hasil untuk "<strong>${escapeHtml(query)}</strong>"`;
+        } catch(e) { console.error('Search forum error:', e); }
+    }
+    
+    function resetForumSearch() {
+        document.getElementById('forumSearchInput').value = '';
+        document.getElementById('forumSearchInfo').style.display = 'none';
+        displayForum(allForumData);
+    }
+    
+    function showReplyForm(parentId) {
+        const existingForm = document.querySelector('.reply-form-active');
+        if (existingForm) existingForm.remove();
+        
+        const targetPost = document.querySelector(`.forum-post[data-post-id="${parentId}"]`);
+        if (!targetPost) return;
+        
+        const formDiv = document.createElement('div');
+        formDiv.className = 'reply-form-active';
+        formDiv.style.cssText = 'margin-top:0.8rem;margin-left:2rem;padding:0.8rem;background:#f0f0f5;border-radius:0.5rem;';
+        formDiv.innerHTML = `
+            <div style="display:flex;gap:0.5rem;align-items:flex-start;flex-wrap:wrap;">
+                <textarea id="replyMessage" rows="2" placeholder="Tulis balasan..." style="flex:1;padding:0.5rem;border-radius:0.5rem;border:1px solid #ddd;"></textarea>
+                <button id="submitReply" class="btn" style="padding:0.5rem 1rem;margin:0;">Kirim</button>
+                <button id="cancelReply" class="btn" style="padding:0.5rem 1rem;background:#ccc;margin:0;">Batal</button>
+            </div>
+        `;
+        targetPost.appendChild(formDiv);
+        
+        document.getElementById('submitReply').onclick = async () => {
+            const message = document.getElementById('replyMessage').value;
+            if (!message.trim()) { alert('Isi pesan balasan!'); return; }
+            await postReply(parentId, message);
+        };
+        document.getElementById('cancelReply').onclick = () => formDiv.remove();
+    }
+    
+    async function postReply(parentId, message) {
+        if (!currentUser) { alert('Login dulu untuk membalas!'); return; }
+        const res = await fetch(`${API_BASE}/forum`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ message, parent_id: parseInt(parentId) })
+        });
+        if (res.ok) { loadForum(); }
+        else { const error = await res.json(); alert('Gagal membalas: ' + error.error); }
+    }
+    
+    window.deletePost = async (id) => {
+        if (confirm('Hapus postingan dan semua balasannya?')) {
+            await fetch(`${API_BASE}/forum/${id}`, { method: 'DELETE', credentials: 'include' });
+            loadForum();
+        }
+    };
+    
+    async function postToForum(message) {
+        if (!currentUser) { alert('Login dulu!'); return; }
+        const res = await fetch(`${API_BASE}/forum`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ message, parent_id: 0 })
+        });
+        if (res.ok) { document.getElementById('forumMessage').value = ''; loadForum(); }
+        else { const error = await res.json(); alert('Gagal posting: ' + error.error); }
+    }
+    
+    document.getElementById('postBtn').addEventListener('click', () => {
+        const msg = document.getElementById('forumMessage').value;
+        if (msg.trim()) postToForum(msg);
+        else alert('Isi pesan!');
+    });
+    
+    // ============= ADMIN FUNCTIONS =============
+    async function loadStats() {
+        try {
+            const res = await fetch(`${API_BASE}/stats`, { credentials: 'include' });
+            const s = await res.json();
+            document.getElementById('statForum').innerText = s.forumPosts ?? 0;
+            document.getElementById('statNews').innerText = s.news ?? 0;
+            document.getElementById('statGallery').innerText = s.gallery ?? 0;
+            document.getElementById('statMembers').innerText = s.members ?? 0;
+            document.getElementById('statSocial').innerText = s.social ?? 0;
+            document.getElementById('statMusic').innerText = s.music ?? 0;
+            document.getElementById('statUsers').innerText = s.users === '🔒' ? '🔒' : (s.users ?? 0);
+        } catch(e) { console.error('Load stats error:', e); }
+    }
+    
+    async function loadNewsAdmin() {
+        const res = await fetch(`${API_BASE}/news`);
+        const news = await res.json();
+        document.getElementById('newsListAdmin').innerHTML = news.map(n => `
+            <div class="admin-list-item">
+                <div><strong>${escapeHtml(n.title)}</strong><br><small>${escapeHtml(n.date)}</small></div>
+                <div>
+                    <button class="btn-icon edit" onclick="openEditModal('news', ${n.id})">✏️</button>
+                    <button class="btn-icon delete" onclick="deleteNewsAdmin(${n.id})">🗑️</button>
+                </div>
+            </div>
+        `).join('') || '<p>Belum ada berita.</p>';
+    }
+    
+    window.deleteNewsAdmin = async (id) => {
+        if (confirm('Hapus berita?')) {
+            await fetch(`${API_BASE}/news/${id}`, { method: 'DELETE', credentials: 'include' });
+            loadNewsAdmin(); loadNews();
+        }
+    };
+    
+    async function addNews() {
+        const title = document.getElementById('newsTitle').value;
+        const content = document.getElementById('newsContent').value;
+        const date = document.getElementById('newsDate').value;
+        if (!title || !content) { alert('Isi judul dan konten!'); return; }
+        const res = await fetch(`${API_BASE}/news`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ title, content, date })
+        });
+        if (res.ok) {
+            document.getElementById('newsTitle').value = '';
+            document.getElementById('newsContent').value = '';
+            loadNewsAdmin(); loadNews();
+            alert('Berita berhasil ditambahkan!');
+        } else { const e = await res.json(); alert('Gagal: ' + e.error); }
+    }
+    
+    async function loadGalleryAdmin() {
+        const res = await fetch(`${API_BASE}/gallery`);
+        const items = await res.json();
+        document.getElementById('galleryListAdmin').innerHTML = items.map(item => `
+            <div class="admin-list-item">
+                <div><strong>${escapeHtml(item.title || 'Tanpa judul')}</strong><br><small>${escapeHtml(item.caption || '')}</small></div>
+                <div>
+                    <button class="btn-icon edit" onclick="openEditModal('gallery', ${item.id})">✏️</button>
+                    <button class="btn-icon delete" onclick="deleteGalleryAdmin(${item.id})">🗑️</button>
+                </div>
+            </div>
+        `).join('') || '<p>Belum ada foto.</p>';
+    }
+    
+    window.deleteGalleryAdmin = async (id) => {
+        if (confirm('Hapus foto dari galeri?')) {
+            await fetch(`${API_BASE}/gallery/${id}`, { method: 'DELETE', credentials: 'include' });
+            loadGalleryAdmin(); loadGallery();
+        }
+    };
+    
+    async function uploadGallery() {
+        const title = document.getElementById('galleryTitle').value;
+        const filename = document.getElementById('galleryImageUrl').value;
+        const caption = document.getElementById('galleryCaption').value;
+        if (!filename) { alert('Masukkan URL gambar!'); return; }
+        const res = await fetch(`${API_BASE}/gallery/upload`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ title, filename, caption })
+        });
+        if (res.ok) {
+            alert('Foto berhasil ditambahkan!');
+            document.getElementById('galleryTitle').value = '';
+            document.getElementById('galleryImageUrl').value = '';
+            document.getElementById('galleryCaption').value = '';
+            loadGalleryAdmin(); loadGallery();
+        } else { const e = await res.json(); alert('Gagal: ' + e.error); }
+    }
+    
+    async function loadMembersAdmin() {
+        const res = await fetch(`${API_BASE}/members`);
+        const members = await res.json();
+        document.getElementById('membersListAdmin').innerHTML = members.map(m => `
+            <div class="admin-list-item">
+                <div><strong>${escapeHtml(m.name)}</strong> - ${escapeHtml(m.role)}<br><small>${escapeHtml((m.bio || '').substring(0, 50))}</small></div>
+                <div>
+                    <button class="btn-icon edit" onclick="openEditModal('member', ${m.id})">✏️</button>
+                    <button class="btn-icon delete" onclick="deleteMemberAdmin(${m.id})">🗑️</button>
+                </div>
+            </div>
+        `).join('') || '<p>Belum ada member.</p>';
+    }
+    
+    window.deleteMemberAdmin = async (id) => {
+        if (confirm('Hapus member?')) {
+            await fetch(`${API_BASE}/members/${id}`, { method: 'DELETE', credentials: 'include' });
+            loadMembersAdmin(); loadMembers();
+        }
+    };
+    
+    async function addMember() {
+        const name = document.getElementById('memberName').value;
+        const role = document.getElementById('memberRole').value;
+        const bio = document.getElementById('memberBio').value;
+        const photo = document.getElementById('memberPhoto').value;
+        if (!name || !role) { alert('Nama dan role wajib!'); return; }
+        const res = await fetch(`${API_BASE}/members`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ name, role, bio, photo })
+        });
+        if (res.ok) {
+            document.getElementById('memberName').value = '';
+            document.getElementById('memberRole').value = '';
+            document.getElementById('memberBio').value = '';
+            document.getElementById('memberPhoto').value = '';
+            loadMembersAdmin(); loadMembers();
+            alert('Member berhasil ditambahkan!');
+        } else { const e = await res.json(); alert('Gagal: ' + e.error); }
+    }
+    
+    async function loadSocialAdmin() {
+        const res = await fetch(`${API_BASE}/social`);
+        const items = await res.json();
+        document.getElementById('socialListAdmin').innerHTML = items.map(item => `
+            <div class="admin-list-item">
+                <div><span>${item.platform === 'instagram' ? '📷 IG' : '🎬 YT'}</span> ${escapeHtml(item.caption || item.url)}</div>
+                <div>
+                    <button class="btn-icon edit" onclick="openEditModal('social', ${item.id})">✏️</button>
+                    <button class="btn-icon delete" onclick="deleteSocialAdmin(${item.id})">🗑️</button>
+                </div>
+            </div>
+        `).join('') || '<p>Belum ada sosial media.</p>';
+    }
+    
+    window.deleteSocialAdmin = async (id) => {
+        if (confirm('Hapus postingan sosial media?')) {
+            await fetch(`${API_BASE}/social/${id}`, { method: 'DELETE', credentials: 'include' });
+            loadSocialAdmin(); loadSocial();
+        }
+    };
+    
+    async function addSocial() {
+        const platform = document.getElementById('socialPlatform').value;
+        const url = document.getElementById('socialUrl').value;
+        const embed_code = document.getElementById('socialEmbed').value;
+        const caption = document.getElementById('socialCaption').value;
+        if (!platform || !url) { alert('Platform dan URL wajib!'); return; }
+        const res = await fetch(`${API_BASE}/social`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ platform, url, embed_code, caption })
+        });
+        if (res.ok) {
+            document.getElementById('socialUrl').value = '';
+            document.getElementById('socialEmbed').value = '';
+            document.getElementById('socialCaption').value = '';
+            loadSocialAdmin(); loadSocial();
+            alert('Sosial media berhasil ditambahkan!');
+        } else { const e = await res.json(); alert('Gagal: ' + e.error); }
+    }
+    
+    async function loadMusicAdmin() {
+        const res = await fetch(`${API_BASE}/music`);
+        const songs = await res.json();
+        document.getElementById('musicListAdmin').innerHTML = songs.map(song => `
+            <div class="admin-list-item">
+                <div><i class="fas fa-music"></i> <strong>${escapeHtml(song.title || 'Lagu CORTIS')}</strong><br><small>${escapeHtml(song.filepath || '')}</small></div>
+                <div>
+                    <button class="btn-icon edit" onclick="openEditModal('music', ${song.id})">✏️</button>
+                    <button class="btn-icon delete" onclick="deleteMusicAdmin(${song.id})">🗑️</button>
+                </div>
+            </div>
+        `).join('') || '<p>Belum ada lagu.</p>';
+    }
+    
+    window.deleteMusicAdmin = async (id) => {
+        if (confirm('Hapus lagu?')) {
+            await fetch(`${API_BASE}/music/${id}`, { method: 'DELETE', credentials: 'include' });
+            loadMusicAdmin(); loadPlaylist();
+        }
+    };
+    
+    // FIX: endpoint dan field diselaraskan dengan api.js (POST /music/upload)
+    async function uploadMusic() {
+        const title = document.getElementById('musicTitle').value;
+        const filepath = document.getElementById('musicUrl').value;
+        if (!filepath) { alert('Masukkan URL file MP3!'); return; }
+        const filename = filepath.split('/').pop();
+        const res = await fetch(`${API_BASE}/music/upload`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ title, filename, filepath })
+        });
+        if (res.ok) {
+            alert('Lagu berhasil ditambahkan!');
+            document.getElementById('musicTitle').value = '';
+            document.getElementById('musicUrl').value = '';
+            loadMusicAdmin(); loadPlaylist();
+        } else { const e = await res.json(); alert('Gagal: ' + e.error); }
+    }
+    
+    // FIX: endpoint dan response field diselaraskan dengan api.js (/settings/background → data.background)
+    async function loadBackground() {
+        try {
+            const res = await fetch(`${API_BASE}/settings/background`);
+            const data = await res.json();
+            if (data.background) {
+                document.body.style.backgroundImage = `url(${data.background})`;
+                const preview = document.getElementById('currentBackgroundPreview');
+                if (preview) preview.src = data.background;
+            }
+        } catch(e) { console.error('Load background error:', e); }
+    }
+    
+    async function uploadBackground() {
+        const background = document.getElementById('backgroundUrl').value;
+        if (!background) { alert('Masukkan URL gambar background!'); return; }
+        const res = await fetch(`${API_BASE}/settings/background`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ background })
+        });
+        if (res.ok) {
+            alert('Background berhasil diubah!');
+            document.body.style.backgroundImage = `url(${background})`;
+            document.getElementById('currentBackgroundPreview').src = background;
+            document.getElementById('backgroundUrl').value = '';
+        } else { const e = await res.json(); alert('Gagal: ' + e.error); }
+    }
+    
+    // ============= USER MANAGEMENT =============
+    async function loadUsersAdmin() {
+        try {
+            const res = await fetch(`${API_BASE}/admin/users`, { credentials: 'include' });
+            if (!res.ok) return;
+            const users = await res.json();
+            usersData = users;
+            document.getElementById('totalUsers').innerText = users.length;
+            document.getElementById('totalAdmins').innerText = users.filter(u => u.role === 'admin' || u.role === 'super_admin').length;
+            document.getElementById('totalBanned').innerText = users.filter(u => u.banned).length;
+            
+            document.getElementById('usersListAdmin').innerHTML = users.map(user => {
+                let roleClass = 'user', roleText = '👤 USER';
+                if (user.role === 'super_admin') { roleClass = 'super_admin'; roleText = '👑 SUPER ADMIN'; }
+                else if (user.role === 'admin') { roleClass = 'admin'; roleText = '⭐ ADMIN'; }
+                
+                return `
+                    <div class="admin-list-item">
+                        <div>
+                            <strong>${escapeHtml(user.username)}</strong>
+                            <span class="user-badge ${roleClass}">${roleText}</span>
+                            ${user.banned ? '<span class="user-badge banned">🚫 BANNED</span>' : ''}
+                            <br><small>📧 ${escapeHtml(user.email)}</small>
+                            <br><small>📅 Bergabung: ${formatDate(user.created_at)}</small>
+                        </div>
+                        <div style="display:flex;gap:0.3rem;flex-wrap:wrap;">
+                            ${user.role !== 'super_admin' ? `<button class="btn-icon edit" onclick="makeAdmin(${user.id})" title="Jadikan Admin">👑</button>` : ''}
+                            ${user.role === 'admin' ? `<button class="btn-icon delete" onclick="removeAdmin(${user.id})" title="Cabut Admin">⬇️</button>` : ''}
+                            ${user.banned
+                                ? `<button class="btn-icon edit" onclick="unbanUser(${user.id})" style="color:#4CAF50;">✅ Unban</button>`
+                                : `<button class="btn-icon delete" onclick="banUser(${user.id})">🚫 Ban</button>`}
+                            ${user.role !== 'super_admin' ? `<button class="btn-icon delete" onclick="deleteUser(${user.id})">🗑️</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('') || '<p>Belum ada user.</p>';
+        } catch(e) { console.error('Load users error:', e); }
+    }
+    
+    async function makeAdmin(userId) {
+        if (!confirm('Jadikan user ini sebagai admin?')) return;
+        const res = await fetch(`${API_BASE}/admin/users/${userId}/role`, {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ role: 'admin' })
+        });
+        const data = await res.json();
+        alert(data.message); loadUsersAdmin();
+    }
+    
+    async function removeAdmin(userId) {
+        if (!confirm('Cabut hak admin?')) return;
+        const res = await fetch(`${API_BASE}/admin/users/${userId}/role`, {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ role: 'user' })
+        });
+        const data = await res.json();
+        alert(data.message); loadUsersAdmin();
+    }
+    
+    async function banUser(userId) {
+        if (!confirm('Ban user ini?')) return;
+        const res = await fetch(`${API_BASE}/admin/users/${userId}/ban`, {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ banned: true })
+        });
+        const data = await res.json();
+        alert(data.message); loadUsersAdmin();
+    }
+    
+    async function unbanUser(userId) {
+        if (!confirm('Unban user ini?')) return;
+        const res = await fetch(`${API_BASE}/admin/users/${userId}/ban`, {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ banned: false })
+        });
+        const data = await res.json();
+        alert(data.message); loadUsersAdmin();
+    }
+    
+    async function deleteUser(userId) {
+        const user = usersData.find(u => u.id === userId);
+        if (user?.role === 'super_admin') { alert('Tidak bisa menghapus Super Admin!'); return; }
+        if (!confirm(`Hapus user "${escapeHtml(user?.username)}"?`)) return;
+        const res = await fetch(`${API_BASE}/admin/users/${userId}`, { method: 'DELETE', credentials: 'include' });
+        const data = await res.json();
+        alert(data.message); loadUsersAdmin(); loadForum();
+    }
+    
+    // ============= EDIT MODAL =============
+    // FIX: fetch member menggunakan endpoint /member/:id (singular) yang sudah ada di api.js
+    window.openEditModal = async (type, id) => {
+        currentEditType = type;
+        currentEditId = id;
+        try {
+            // member pakai endpoint singular /member/:id, yang lain pakai plural
+            const endpoint = type === 'member' ? 'member' : type;
+            const res = await fetch(`${API_BASE}/${endpoint}/${id}`, { credentials: 'include' });
+            const data = await res.json();
+            let fieldsHtml = '';
+            if (type === 'news') {
+                fieldsHtml = `<label>Judul</label><input type="text" id="edit_title" value="${escapeHtml(data.title)}"><label>Isi</label><textarea id="edit_content" rows="4">${escapeHtml(data.content)}</textarea><label>Tanggal</label><input type="date" id="edit_date" value="${escapeHtml(data.date)}">`;
+                document.getElementById('modalTitle').innerText = 'Edit Berita';
+            } else if (type === 'member') {
+                fieldsHtml = `<label>Nama Member</label><input type="text" id="edit_name" value="${escapeHtml(data.name)}"><label>Role</label><input type="text" id="edit_role" value="${escapeHtml(data.role)}"><label>Bio</label><textarea id="edit_bio" rows="3">${escapeHtml(data.bio || '')}</textarea><label>URL Foto</label><input type="text" id="edit_photo" value="${escapeHtml(data.photo || '')}">`;
+                document.getElementById('modalTitle').innerText = 'Edit Member';
+            } else if (type === 'social') {
+                fieldsHtml = `<label>Platform</label><select id="edit_platform"><option value="instagram" ${data.platform === 'instagram' ? 'selected' : ''}>Instagram</option><option value="youtube" ${data.platform === 'youtube' ? 'selected' : ''}>YouTube</option></select><label>URL</label><input type="text" id="edit_url" value="${escapeHtml(data.url)}"><label>Embed Code</label><textarea id="edit_embed" rows="3">${escapeHtml(data.embed_code || '')}</textarea><label>Caption</label><input type="text" id="edit_caption" value="${escapeHtml(data.caption || '')}">`;
+                document.getElementById('modalTitle').innerText = 'Edit Sosial Media';
+            } else if (type === 'music') {
+                fieldsHtml = `<label>Judul Lagu</label><input type="text" id="edit_title" value="${escapeHtml(data.title || '')}">`;
+                document.getElementById('modalTitle').innerText = 'Edit Lagu';
+            } else if (type === 'gallery') {
+                fieldsHtml = `<label>Judul</label><input type="text" id="edit_title" value="${escapeHtml(data.title || '')}"><label>Deskripsi</label><textarea id="edit_caption" rows="3">${escapeHtml(data.caption || '')}</textarea><label>URL Gambar</label><input type="text" id="edit_filename" value="${escapeHtml(data.filename || '')}">`;
+                document.getElementById('modalTitle').innerText = 'Edit Foto Galeri';
+            }
+            document.getElementById('modalFields').innerHTML = fieldsHtml;
+            document.getElementById('editModal').style.display = 'flex';
+        } catch (err) { alert('Gagal mengambil data'); }
+    };
+    
+    document.getElementById('saveEditBtn').onclick = async () => {
+        try {
+            let body = {};
+            if (currentEditType === 'news') {
+                body = { title: document.getElementById('edit_title').value, content: document.getElementById('edit_content').value, date: document.getElementById('edit_date').value };
+                await fetch(`${API_BASE}/news/${currentEditId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body) });
+                loadNewsAdmin(); loadNews();
+            } else if (currentEditType === 'member') {
+                body = { name: document.getElementById('edit_name').value, role: document.getElementById('edit_role').value, bio: document.getElementById('edit_bio').value, photo: document.getElementById('edit_photo').value };
+                await fetch(`${API_BASE}/members/${currentEditId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body) });
+                loadMembersAdmin(); loadMembers();
+            } else if (currentEditType === 'social') {
+                body = { platform: document.getElementById('edit_platform').value, url: document.getElementById('edit_url').value, embed_code: document.getElementById('edit_embed').value, caption: document.getElementById('edit_caption').value };
+                await fetch(`${API_BASE}/social/${currentEditId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body) });
+                loadSocialAdmin(); loadSocial();
+            } else if (currentEditType === 'music') {
+                body = { title: document.getElementById('edit_title').value };
+                await fetch(`${API_BASE}/music/${currentEditId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body) });
+                loadMusicAdmin(); loadPlaylist();
+            } else if (currentEditType === 'gallery') {
+                body = { title: document.getElementById('edit_title').value, caption: document.getElementById('edit_caption').value, filename: document.getElementById('edit_filename').value };
+                await fetch(`${API_BASE}/gallery/${currentEditId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body) });
+                loadGalleryAdmin(); loadGallery();
+            }
+            document.getElementById('editModal').style.display = 'none';
+            alert('✅ Berhasil disimpan!');
+        } catch (err) { alert('Gagal menyimpan'); }
+    };
+    
+    document.getElementById('cancelEditBtn').onclick = () => document.getElementById('editModal').style.display = 'none';
+    
+    // ============= EVENT LISTENERS =============
+    document.getElementById('addNewsBtn').addEventListener('click', addNews);
+    document.getElementById('uploadGalleryBtn').addEventListener('click', uploadGallery);
+    document.getElementById('addMemberBtn').addEventListener('click', addMember);
+    document.getElementById('addSocialBtn').addEventListener('click', addSocial);
+    document.getElementById('uploadMusicBtn').addEventListener('click', uploadMusic);
+    document.getElementById('uploadBackgroundBtn').addEventListener('click', uploadBackground);
+    
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`${btn.dataset.tab}Tab`).classList.add('active');
+            if (btn.dataset.tab === 'manageNews') loadNewsAdmin();
+            if (btn.dataset.tab === 'manageGallery') loadGalleryAdmin();
+            if (btn.dataset.tab === 'manageMembers') loadMembersAdmin();
+            if (btn.dataset.tab === 'manageSocial') loadSocialAdmin();
+            if (btn.dataset.tab === 'manageMusic') loadMusicAdmin();
+            if (btn.dataset.tab === 'manageUsers') loadUsersAdmin();
+        });
+    });
+    
+    // FIX: Ganti DOMContentLoaded (tidak akan terpanggil di script akhir body) dengan IIFE async
+    (async () => {
+        await loadBackground();
+        await checkAuth();
+        await loadMembers();
+        await loadGallery();
+        await loadSocial();
+        await loadNews();
+        await loadForum();
+    })();
+</script>
+</body>
+</html>

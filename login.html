@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CORTIS Fanbase</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #16213e, #0f3460); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .container { background: white; border-radius: 1rem; padding: 2rem; width: 100%; max-width: 400px; }
+        .logo { text-align: center; font-size: 1.8rem; font-weight: bold; margin-bottom: 1.5rem; color: #1a1a2e; }
+        .logo span { color: #ff6b6b; }
+        .tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 2px solid #eee; }
+        .tab { flex: 1; text-align: center; padding: 0.5rem; cursor: pointer; font-weight: bold; }
+        .tab.active { color: #ff6b6b; border-bottom: 2px solid #ff6b6b; }
+        .form { display: none; }
+        .form.active { display: block; }
+        input { width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 0.5rem; font-size: 1rem; }
+        input:focus { outline: none; border-color: #ff6b6b; }
+        .btn { width: 100%; background: #ff6b6b; color: white; border: none; padding: 0.8rem; border-radius: 2rem; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .btn:hover { background: #e55a6b; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .message { margin-top: 1rem; padding: 0.5rem; border-radius: 0.5rem; text-align: center; }
+        .error { background: #ffe0e0; color: red; }
+        .success { background: #e0ffe0; color: green; }
+        .back-link { text-align: center; margin-top: 1rem; }
+        .back-link a { color: #ff6b6b; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">CORTIS<span>FANBASE</span></div>
+    <div class="tabs">
+        <div class="tab active" data-tab="login">Login</div>
+        <div class="tab" data-tab="register">Sign Up</div>
+    </div>
+    <div id="loginForm" class="form active">
+        <input type="text" id="loginUsername" placeholder="Username atau Email" autocomplete="username">
+        <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+        <button class="btn" id="loginBtn">Login</button>
+        <div id="loginMessage" class="message"></div>
+    </div>
+    <div id="registerForm" class="form">
+        <input type="text" id="regUsername" placeholder="Username" autocomplete="username">
+        <input type="email" id="regEmail" placeholder="Email" autocomplete="email">
+        <input type="password" id="regPassword" placeholder="Password (min 4)" autocomplete="new-password">
+        <button class="btn" id="registerBtn">Daftar</button>
+        <div id="registerMessage" class="message"></div>
+    </div>
+    <div class="back-link"><a href="/">← Kembali ke Website</a></div>
+</div>
+<script>
+    const API_BASE = window.location.origin + '/.netlify/functions/api';
+    
+    // Jika sudah login, langsung redirect
+    fetch(`${API_BASE}/me`, { credentials: 'include' })
+        .then(res => { if (res.ok) window.location.href = '/'; })
+        .catch(() => {});
+    
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('loginForm').classList.toggle('active', tab.dataset.tab === 'login');
+            document.getElementById('registerForm').classList.toggle('active', tab.dataset.tab === 'register');
+            document.getElementById('loginMessage').innerHTML = '';
+            document.getElementById('registerMessage').innerHTML = '';
+        });
+    });
+    
+    async function login() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const msg = document.getElementById('loginMessage');
+        const btn = document.getElementById('loginBtn');
+        if (!username || !password) { msg.innerHTML = 'Isi semua field!'; msg.className = 'message error'; return; }
+        btn.disabled = true;
+        btn.innerText = 'Memproses...';
+        try {
+            const res = await fetch(`${API_BASE}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                msg.innerHTML = 'Login berhasil! Redirecting...';
+                msg.className = 'message success';
+                setTimeout(() => window.location.href = '/', 800);
+            } else {
+                msg.innerHTML = data.error || 'Login gagal';
+                msg.className = 'message error';
+                btn.disabled = false;
+                btn.innerText = 'Login';
+            }
+        } catch(err) {
+            msg.innerHTML = 'Gagal koneksi ke server';
+            msg.className = 'message error';
+            btn.disabled = false;
+            btn.innerText = 'Login';
+        }
+    }
+    
+    async function register() {
+        const username = document.getElementById('regUsername').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const msg = document.getElementById('registerMessage');
+        const btn = document.getElementById('registerBtn');
+        if (!username || !email || !password) { msg.innerHTML = 'Isi semua field!'; msg.className = 'message error'; return; }
+        if (password.length < 4) { msg.innerHTML = 'Password minimal 4 karakter!'; msg.className = 'message error'; return; }
+        btn.disabled = true;
+        btn.innerText = 'Mendaftar...';
+        try {
+            const res = await fetch(`${API_BASE}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                msg.innerHTML = 'Registrasi berhasil! Silakan login.';
+                msg.className = 'message success';
+                setTimeout(() => document.querySelector('.tab[data-tab="login"]').click(), 1500);
+            } else {
+                msg.innerHTML = data.error || 'Registrasi gagal';
+                msg.className = 'message error';
+            }
+        } catch(err) {
+            msg.innerHTML = 'Gagal koneksi ke server';
+            msg.className = 'message error';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Daftar';
+        }
+    }
+    
+    document.getElementById('loginBtn').addEventListener('click', login);
+    document.getElementById('registerBtn').addEventListener('click', register);
+    document.getElementById('loginPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
+    document.getElementById('loginUsername').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
+    document.getElementById('regPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') register(); });
+</script>
+</body>
+</html>
