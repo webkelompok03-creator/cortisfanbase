@@ -77,9 +77,18 @@ async function getCurrentUser(event, supabase) {
 
 // ============= HANDLER UTAMA =============
 exports.handler = async (event) => {
+    console.log('ENV CHECK - SUPABASE_URL:', SUPABASE_URL ? 'ADA' : 'KOSONG');
+    console.log('ENV CHECK - SUPABASE_KEY:', SUPABASE_KEY ? 'ADA' : 'KOSONG');
+    console.log('ENV CHECK - JWT_SECRET:', JWT_SECRET ? 'ADA' : 'KOSONG');
+    console.log('REQUEST:', event.httpMethod, event.path);
+
     // FIX: Validasi env vars sebelum melanjutkan
     if (!SUPABASE_URL || !SUPABASE_KEY || !JWT_SECRET) {
-        return respond(500, { error: 'Konfigurasi server tidak lengkap. Set env vars di Netlify.' });
+        const missing = [];
+        if (!SUPABASE_URL) missing.push('SUPABASE_URL');
+        if (!SUPABASE_KEY) missing.push('SUPABASE_SERVICE_KEY');
+        if (!JWT_SECRET) missing.push('JWT_SECRET');
+        return respond(500, { error: 'Env vars belum diset: ' + missing.join(', ') });
     }
 
     // FIX: Inisialisasi supabase di dalam handler agar tidak crash saat cold start
@@ -106,14 +115,28 @@ exports.handler = async (event) => {
         if (!username || !email || !password) return respond(400, { error: 'Semua field wajib diisi' });
         if (password.length < 4) return respond(400, { error: 'Password minimal 4 karakter' });
 
-        // FIX: Pisahkan query agar aman dari injection karakter khusus
-        const { data: existingUser } = await supabase.from('users').select('id').eq('username', username).maybeSingle();
-        const { data: existingEmail } = await supabase.from('users').select('id').eq('email', email).maybeSingle();
+        // Cek username
+        const { data: existingUser, error: errUser } = await supabase.from('users').select('id').eq('username', username).maybeSingle();
+        if (errUser) {
+            console.error('ERROR cek username:', JSON.stringify(errUser));
+            return respond(500, { error: 'DB error cek username: ' + errUser.message });
+        }
+
+        // Cek email
+        const { data: existingEmail, error: errEmail } = await supabase.from('users').select('id').eq('email', email).maybeSingle();
+        if (errEmail) {
+            console.error('ERROR cek email:', JSON.stringify(errEmail));
+            return respond(500, { error: 'DB error cek email: ' + errEmail.message });
+        }
+
         if (existingUser || existingEmail) return respond(400, { error: 'Username atau email sudah digunakan' });
 
         const hashed = await bcrypt.hash(password, 10);
-        const { error } = await supabase.from('users').insert({ username, email, password: hashed, role: 'user', banned: false });
-        if (error) return respond(500, { error: 'Gagal mendaftar' });
+        const { error: errInsert } = await supabase.from('users').insert({ username, email, password: hashed, role: 'user', banned: false });
+        if (errInsert) {
+            console.error('ERROR insert user:', JSON.stringify(errInsert));
+            return respond(500, { error: 'Gagal mendaftar: ' + errInsert.message });
+        }
         return respond(201, { message: 'Registrasi berhasil!' });
     }
 
