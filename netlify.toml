@@ -5,13 +5,13 @@
 [functions]
   node_bundler = "esbuild"
 
-# Redirect semua request API ke function
+# Redirect halaman login
 [[redirects]]
-  from = "/.netlify/functions/api/*"
-  to = "/.netlify/functions/api/:splat"
+  from = "/login"
+  to = "/login.html"
   status = 200
 
-# Redirect 404 ke index
+# Semua route lain ke index (SPA fallback)
 [[redirects]]
   from = "/*"
   to = "/index.html"
