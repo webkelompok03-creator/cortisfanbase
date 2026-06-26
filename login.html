@@ -25,6 +25,7 @@
         .success { background: #e0ffe0; color: green; }
         .back-link { text-align: center; margin-top: 1rem; }
         .back-link a { color: #ff6b6b; text-decoration: none; }
+        .debug { font-size: 0.75rem; background: #f0f0f0; padding: 0.5rem; border-radius: 0.3rem; margin-top: 0.5rem; word-break: break-all; display: none; }
     </style>
 </head>
 <body>
@@ -46,20 +47,21 @@
         <input type="password" id="regPassword" placeholder="Password (min 4)" autocomplete="new-password">
         <button class="btn" id="registerBtn">Daftar</button>
         <div id="registerMessage" class="message"></div>
+        <div id="debugInfo" class="debug"></div>
     </div>
-    <div class="back-link"><a href="/">← Kembali ke Website</a></div>
+    <div class="back-link"><a href="/">Kembali ke Website</a></div>
 </div>
 <script>
     const API_BASE = window.location.origin + '/.netlify/functions/api';
-    
+
     // Jika sudah login, langsung redirect
-    fetch(`${API_BASE}/me`, { credentials: 'include' })
-        .then(res => { if (res.ok) window.location.href = '/'; })
-        .catch(() => {});
-    
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    fetch(API_BASE + '/me', { credentials: 'include' })
+        .then(function(res) { if (res.ok) window.location.href = '/'; })
+        .catch(function() {});
+
+    document.querySelectorAll('.tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
             tab.classList.add('active');
             document.getElementById('loginForm').classList.toggle('active', tab.dataset.tab === 'login');
             document.getElementById('registerForm').classList.toggle('active', tab.dataset.tab === 'register');
@@ -67,80 +69,104 @@
             document.getElementById('registerMessage').innerHTML = '';
         });
     });
-    
-    async function login() {
-        const username = document.getElementById('loginUsername').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        const msg = document.getElementById('loginMessage');
-        const btn = document.getElementById('loginBtn');
+
+    function login() {
+        var username = document.getElementById('loginUsername').value.trim();
+        var password = document.getElementById('loginPassword').value;
+        var msg = document.getElementById('loginMessage');
+        var btn = document.getElementById('loginBtn');
         if (!username || !password) { msg.innerHTML = 'Isi semua field!'; msg.className = 'message error'; return; }
         btn.disabled = true;
         btn.innerText = 'Memproses...';
-        try {
-            const res = await fetch(`${API_BASE}/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ username, password })
+        fetch(API_BASE + '/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ username: username, password: password })
+        })
+        .then(function(res) {
+            return res.json().then(function(data) {
+                if (res.ok) {
+                    msg.innerHTML = 'Login berhasil! Redirecting...';
+                    msg.className = 'message success';
+                    setTimeout(function() { window.location.href = '/'; }, 800);
+                } else {
+                    msg.innerHTML = data.error || 'Login gagal (status ' + res.status + ')';
+                    msg.className = 'message error';
+                    btn.disabled = false;
+                    btn.innerText = 'Login';
+                }
             });
-            const data = await res.json();
-            if (res.ok) {
-                msg.innerHTML = 'Login berhasil! Redirecting...';
-                msg.className = 'message success';
-                setTimeout(() => window.location.href = '/', 800);
-            } else {
-                msg.innerHTML = data.error || 'Login gagal';
-                msg.className = 'message error';
-                btn.disabled = false;
-                btn.innerText = 'Login';
-            }
-        } catch(err) {
-            msg.innerHTML = 'Gagal koneksi ke server';
+        })
+        .catch(function(err) {
+            msg.innerHTML = 'Gagal koneksi: ' + err.message;
             msg.className = 'message error';
             btn.disabled = false;
             btn.innerText = 'Login';
-        }
+        });
     }
-    
-    async function register() {
-        const username = document.getElementById('regUsername').value.trim();
-        const email = document.getElementById('regEmail').value.trim();
-        const password = document.getElementById('regPassword').value;
-        const msg = document.getElementById('registerMessage');
-        const btn = document.getElementById('registerBtn');
+
+    function register() {
+        var username = document.getElementById('regUsername').value.trim();
+        var email = document.getElementById('regEmail').value.trim();
+        var password = document.getElementById('regPassword').value;
+        var msg = document.getElementById('registerMessage');
+        var debug = document.getElementById('debugInfo');
+        var btn = document.getElementById('registerBtn');
+
         if (!username || !email || !password) { msg.innerHTML = 'Isi semua field!'; msg.className = 'message error'; return; }
         if (password.length < 4) { msg.innerHTML = 'Password minimal 4 karakter!'; msg.className = 'message error'; return; }
+
         btn.disabled = true;
         btn.innerText = 'Mendaftar...';
-        try {
-            const res = await fetch(`${API_BASE}/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password })
+        msg.innerHTML = '';
+        debug.style.display = 'none';
+
+        var url = API_BASE + '/register';
+        console.log('POST ke:', url);
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ username: username, email: email, password: password })
+        })
+        .then(function(res) {
+            console.log('Status:', res.status);
+            return res.text().then(function(text) {
+                console.log('Response body:', text);
+                var data;
+                try { data = JSON.parse(text); } catch(e) { data = { error: 'Response tidak valid: ' + text.substring(0, 100) }; }
+                if (res.ok) {
+                    msg.innerHTML = 'Registrasi berhasil! Silakan login.';
+                    msg.className = 'message success';
+                    setTimeout(function() { document.querySelector('.tab[data-tab="login"]').click(); }, 1500);
+                } else {
+                    msg.innerHTML = data.error || ('Gagal (HTTP ' + res.status + ')');
+                    msg.className = 'message error';
+                    debug.style.display = 'block';
+                    debug.innerText = 'URL: ' + url + '\nStatus: ' + res.status + '\nResponse: ' + text.substring(0, 200);
+                }
             });
-            const data = await res.json();
-            if (res.ok) {
-                msg.innerHTML = 'Registrasi berhasil! Silakan login.';
-                msg.className = 'message success';
-                setTimeout(() => document.querySelector('.tab[data-tab="login"]').click(), 1500);
-            } else {
-                msg.innerHTML = data.error || 'Registrasi gagal';
-                msg.className = 'message error';
-            }
-        } catch(err) {
-            msg.innerHTML = 'Gagal koneksi ke server';
+        })
+        .catch(function(err) {
+            console.error('Fetch error:', err);
+            msg.innerHTML = 'Gagal koneksi: ' + err.message;
             msg.className = 'message error';
-        } finally {
+            debug.style.display = 'block';
+            debug.innerText = 'URL: ' + url + '\nError: ' + err.toString();
+        })
+        .finally(function() {
             btn.disabled = false;
             btn.innerText = 'Daftar';
-        }
+        });
     }
-    
+
     document.getElementById('loginBtn').addEventListener('click', login);
     document.getElementById('registerBtn').addEventListener('click', register);
-    document.getElementById('loginPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
-    document.getElementById('loginUsername').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
-    document.getElementById('regPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') register(); });
+    document.getElementById('loginPassword').addEventListener('keypress', function(e) { if (e.key === 'Enter') login(); });
+    document.getElementById('loginUsername').addEventListener('keypress', function(e) { if (e.key === 'Enter') login(); });
+    document.getElementById('regPassword').addEventListener('keypress', function(e) { if (e.key === 'Enter') register(); });
 </script>
 </body>
 </html>
